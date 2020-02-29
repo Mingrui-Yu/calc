@@ -47,6 +47,7 @@ uint32_t DeepLCD::add(const cv::Mat &im)
 {
 	descriptor descr = calcDescr(im); // Calculate the descriptor
 	db.push_back(descr); // push to the database
+	curr_id++;
 	return descr.id;
 }
 
@@ -142,7 +143,7 @@ const descriptor DeepLCD::calcDescr(const cv::Mat& im_)
 	float* descr_ = (float*)std::malloc(sz);
 	std::memcpy(descr_, tmp_descr, sz);
 
-	descriptor descr(curr_id++, descr_, p);	
+	descriptor descr(curr_id, descr_, p);	
 
 	return descr;
 

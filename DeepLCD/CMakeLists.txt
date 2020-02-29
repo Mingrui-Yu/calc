@@ -25,6 +25,9 @@ find_package(Eigen3 REQUIRED)
 
 find_package(CUDA QUIET)
 
+option(CPU_ONLY  "Build Caffe without CUDA support" ON) # TODO: rename to USE_CUDA
+add_definitions( -DCPU_ONLY=1 )
+
 if (NOT Caffe_ROOT_DIR)
 	set(Caffe_ROOT_DIR $ENV{HOME}/caffe)
 endif()
@@ -32,8 +35,12 @@ endif()
 MESSAGE("${GREEN}Using Caffe_ROOT_DIR: ${Caffe_ROOT_DIR}${ENDL}")
 set(Caffe_LIBS ${Caffe_ROOT_DIR}/build/lib/libcaffe.so)
 set(Caffe_INCLUDE_DIRS ${Caffe_ROOT_DIR}/build/install/include)
+# find_package(Caffe)
+
 MESSAGE("Caffe_LIBS: ${Caffe_LIBS}")
 MESSAGE("Caffe_INCLUDE_DIRS: ${Caffe_INCLUDE_DIRS}")
+
+
 
 include_directories(
 	${OpenCV_INCLUDE_DIR}
@@ -46,6 +53,7 @@ include_directories(
 
 if (${CUDA_FOUND})
  	include_directories(${CUDA_INCLUDE_DIRS})
+	MESSAGE("CUDA_INCLUDE_DIRS: ${CUDA_INCLUDE_DIRS}")
 endif()
 
 file(GLOB SOURCES "src/${PROJECT_NAME}/[A-z]*.cpp")
@@ -92,6 +100,12 @@ execute_process(COMMAND cp -r ../calc_model .)
 
 add_executable( demo src/demo/demo.cpp )
 target_link_libraries( demo
+	${PROJECT_NAME}
+	${OpenCV_LIBS}
+)
+
+add_executable( KITTI_demo   src/demo/KITTI_demo.cpp )
+target_link_libraries( KITTI_demo
 	${PROJECT_NAME}
 	${OpenCV_LIBS}
 )

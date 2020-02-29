@@ -86,7 +86,7 @@ public:
 
 	Database db; // database of image descriptors
 	uint32_t curr_id = 0; // Increment unbounded. We will never get near a billion images, so it is ok to do so
-	int n_exclude = 0; // Number of most recent frames to exclude from search space
+	int n_exclude = 10; // Number of most recent frames to exclude from search space
 
 	caffe::Net<float>* autoencoder; // the deploy autoencoder
 	caffe::Blob<float>* autoencoder_input; // The encoder's input blob
