@@ -1,3 +1,9 @@
+# my modification
+
+deeplcd.cpp: 改变了 database 中 id++ 的位置，该到了每次 add 中。
+
+deeplcd.cpp / deeplcd.h: 添加了 add(descriptor) 的重载，原来只能 add(imgResize)。
+
 # DeepLCD
 
 A C++ library for online SLAM loop closure, using CALC models. 

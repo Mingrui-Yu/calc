@@ -15,7 +15,8 @@ set(ENDL "${Esc}[m")
 MESSAGE("${GREEN}Build type: ${CMAKE_BUILD_TYPE}${ENDL}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -O3 -march=native ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -march=native -std=c++11")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -march=native -std=c++11")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules) # FindEigen3.cmake
 
@@ -25,7 +26,7 @@ find_package(Eigen3 REQUIRED)
 
 find_package(CUDA QUIET)
 
-option(CPU_ONLY  "Build Caffe without CUDA support" ON) # TODO: rename to USE_CUDA
+# option(CPU_ONLY  "Build Caffe without CUDA support" ON) # TODO: rename to USE_CUDA
 add_definitions( -DCPU_ONLY=1 )
 
 if (NOT Caffe_ROOT_DIR)
@@ -110,6 +111,30 @@ target_link_libraries( KITTI_demo
 	${OpenCV_LIBS}
 )
 
+add_executable( test1   mytest/test1.cpp )
+target_link_libraries( test1
+	${PROJECT_NAME}
+	${OpenCV_LIBS}
+)
+
+add_executable( test2   mytest/test2.cpp )
+target_link_libraries( test2
+	${PROJECT_NAME}
+	${OpenCV_LIBS}
+)
+
+add_executable( test3   mytest/test3.cpp )
+target_link_libraries( test3
+	${PROJECT_NAME}
+	${OpenCV_LIBS}
+)
+
+add_executable( test4   mytest/test4.cpp )
+target_link_libraries( test4
+	${PROJECT_NAME}
+	${OpenCV_LIBS}
+)
+
 
 #### Speed Test ###########################################
 
@@ -129,65 +154,65 @@ target_link_libraries( vary-db-size
 	
 #### Tests ##########################################
 
-option(BUILD_TESTS "Build gtest module and python tests (if python wrappers are built)" ON)
+option(BUILD_TESTS "Build gtest module and python tests (if python wrappers are built)" OFF)
 
-if (BUILD_TESTS)
+# if (BUILD_TESTS)
 
-	message( "\n\n\n${GREEN}Building tests\n\n\n${ENDL}")
+# 	message( "\n\n\n${GREEN}Building tests\n\n\n${ENDL}")
 
-	set(PROJECT_TEST_NAME ${PROJECT_NAME}-test)
+# 	set(PROJECT_TEST_NAME ${PROJECT_NAME}-test)
 	
-	include(ExternalProject)
+# 	include(ExternalProject)
 
-	set(GTEST_FORCE_SHARED_CRT ON)
-	set(GTEST_DISABLE_PTHREADS OFF)
+# 	set(GTEST_FORCE_SHARED_CRT ON)
+# 	set(GTEST_DISABLE_PTHREADS OFF)
 
-	ExternalProject_Add(googletest
-	    GIT_REPOSITORY https://github.com/nmerrill67/googletest.git
-	    CMAKE_ARGS -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG:PATH=DebugLibs
-	    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE:PATH=ReleaseLibs
-	    -Dgtest_force_shared_crt=${GTEST_FORCE_SHARED_CRT}
-	    -Dgtest_disable_pthreads=${GTEST_DISABLE_PTHREADS}
-	    -DBUILD_GTEST=ON
-	    PREFIX "${CMAKE_CURRENT_BINARY_DIR}"
-	    # Disable install step
-	    INSTALL_COMMAND ""
-	)
+# 	ExternalProject_Add(googletest
+# 	    GIT_REPOSITORY https://github.com/nmerrill67/googletest.git
+# 	    CMAKE_ARGS -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG:PATH=DebugLibs
+# 	    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE:PATH=ReleaseLibs
+# 	    -Dgtest_force_shared_crt=${GTEST_FORCE_SHARED_CRT}
+# 	    -Dgtest_disable_pthreads=${GTEST_DISABLE_PTHREADS}
+# 	    -DBUILD_GTEST=ON
+# 	    PREFIX "${CMAKE_CURRENT_BINARY_DIR}"
+# 	    # Disable install step
+# 	    INSTALL_COMMAND ""
+# 	)
 
-	# Specify include dir
-	ExternalProject_Get_Property(googletest source_dir)
-	set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include)
+# 	# Specify include dir
+# 	ExternalProject_Get_Property(googletest source_dir)
+# 	set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include)
 
-	# Specify MainTest's link libraries
-	ExternalProject_Get_Property(googletest binary_dir)
-	set(GTEST_LIBS_DIR ${binary_dir}/googlemock/gtest)
+# 	# Specify MainTest's link libraries
+# 	ExternalProject_Get_Property(googletest binary_dir)
+# 	set(GTEST_LIBS_DIR ${binary_dir}/googlemock/gtest)
 
-	enable_testing()
+# 	enable_testing()
 	
-	include_directories(${GTEST_INCLUDE_DIRS})
+# 	include_directories(${GTEST_INCLUDE_DIRS})
 
-	file(GLOB TEST_SRC_FILES ${PROJECT_SOURCE_DIR}/src/test/*.cpp)
+# 	file(GLOB TEST_SRC_FILES ${PROJECT_SOURCE_DIR}/src/test/*.cpp)
 
-	add_executable(${PROJECT_TEST_NAME} ${TEST_SRC_FILES})
-	add_dependencies(${PROJECT_TEST_NAME} googletest)
+# 	add_executable(${PROJECT_TEST_NAME} ${TEST_SRC_FILES})
+# 	add_dependencies(${PROJECT_TEST_NAME} googletest)
 
-	target_link_libraries(${PROJECT_TEST_NAME}
-                ${PROJECT_NAME}
-		${OpenCV_LIBS}
-		${Caffe_LIBS}
-		${Boost_LIBRARIES}
-		${EIGEN3_LIBS}
-		glog
-	 	${GTEST_LIBS_DIR}/libgtest.a
-        	${GTEST_LIBS_DIR}/libgtest_main.a
-        )
+# 	target_link_libraries(${PROJECT_TEST_NAME}
+#                 ${PROJECT_NAME}
+# 		${OpenCV_LIBS}
+# 		${Caffe_LIBS}
+# 		${Boost_LIBRARIES}
+# 		${EIGEN3_LIBS}
+# 		glog
+# 	 	${GTEST_LIBS_DIR}/libgtest.a
+#         	${GTEST_LIBS_DIR}/libgtest_main.a
+#         )
 	
-	target_link_libraries(${PROJECT_TEST_NAME} ${CMAKE_THREAD_LIBS_INIT})
+# 	target_link_libraries(${PROJECT_TEST_NAME} ${CMAKE_THREAD_LIBS_INIT})
 
- 	add_custom_target(tests COMMAND ./${PROJECT_TEST_NAME})
-else()
-	message( "\n\n\n${RED}Skipping test compilation \n\n\n${ENDL}")	
-endif()
+#  	add_custom_target(tests COMMAND ./${PROJECT_TEST_NAME})
+# else()
+# 	message( "\n\n\n${RED}Skipping test compilation \n\n\n${ENDL}")	
+# endif()
 
 
 

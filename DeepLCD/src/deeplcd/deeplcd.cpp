@@ -1,4 +1,5 @@
 #include "deeplcd.h"
+#include <opencv2/opencv.hpp>
 
 namespace deeplcd
 {
@@ -51,6 +52,13 @@ uint32_t DeepLCD::add(const cv::Mat &im)
 	return descr.id;
 }
 
+uint32_t DeepLCD::add(const descriptor &descr)
+{
+	db.push_back(descr); // push to the database
+	curr_id++;
+	return descr.id;
+}
+
 
 void DeepLCD::query(const cv::Mat& im, QueryResults& results, size_t max_res, bool add_after)
 {
@@ -64,9 +72,10 @@ void DeepLCD::query(const descriptor& descr, QueryResults& results, size_t max_r
 	if (max_res > db.size())
 		throw std::runtime_error("max_res requested is greater than database size");
 
-	results.invalidate(); // This prevents old results from interfering with current results
 	if (results.size() != max_res)
 		results.resize(max_res);
+
+	results.invalidate(); // This prevents old results from interfering with current results
 
 	int i = db.size();
 	for (descriptor d : db)
@@ -79,6 +88,23 @@ void DeepLCD::query(const descriptor& descr, QueryResults& results, size_t max_r
 
 	if (add_after)
 		db.push_back(descr);
+
+}
+
+// --------------------------------------------------------------------------------------------------------------
+
+void DeepLCD::query(const descriptor& descr, std::vector<query_result>& results, double threshold)
+{
+
+	results.clear(); // This prevents old results from interfering with current results
+
+	for (descriptor d : db)
+	{
+		query_result q(score(d.descr, descr.descr), d.id);
+		if (q.score >= threshold){
+			results.push_back(q);
+		}
+	}
 
 }
 
@@ -120,7 +146,6 @@ const float DeepLCD::score(const Vector& d1, const Vector& d2)
 
 const descriptor DeepLCD::calcDescr(const cv::Mat& im_)
 {
-
 	std::vector<cv::Mat> input_channels(1); //We need this wrapper to place data into the net. Allocate space for at most 3 channels	
 	int w = autoencoder_input->width();
 	int h = autoencoder_input->height();
@@ -143,7 +168,7 @@ const descriptor DeepLCD::calcDescr(const cv::Mat& im_)
 	float* descr_ = (float*)std::malloc(sz);
 	std::memcpy(descr_, tmp_descr, sz);
 
-	descriptor descr(curr_id, descr_, p);	
+	descriptor descr(curr_id, descr_, p);
 
 	return descr;
 

@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     int nImages =  vstrImageFilenames.size();
     int nKFs = 0;
 
-    deeplcd::DeepLCD test_lcd; // Using default constructor, takes net from rvbaa_model directory downloaded on compilation
+    deeplcd::DeepLCD test_lcd; // Using default constructor, takes net from model directory downloaded on compilation
     deeplcd::query_result q;
 
     std::cout << "\n---------------------  Start loading frames ... ---------------------\n";

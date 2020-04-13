@@ -1,0 +1,11 @@
+ -- time cost for loading the network model 0.085s
+
+ -- time cost for extracting features: 
+ mean: 0.023841s, stdev: 0.000512s
+
+ -- time cost for adding one image's features to database: 
+ mean: 0.000001s, stdev: 0.000000s
+
+ -- time cost for querying: 
+ mean: 0.000154s, stdev: 0.000031s
+

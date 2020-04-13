@@ -3,6 +3,8 @@
 #include "opencv2/core/core.hpp"
 
 #include <Eigen/Core>
+#include <Eigen/Dense>  // 稠密矩阵的代数运算（逆，特征值等）
+#include <Eigen/Geometry>  // Eigen/Geometry 模块提供了各种旋转和平移的表示
 
 #include <list>
 #include <vector>
@@ -74,7 +76,7 @@ public:
 	{
 		for (size_t i = 0; i < size(); i++)
 			at(i) = query_result(-1.0, 0); // This is needed so old results wont interfere with new ones
-		clear();	
+		// clear();	
 	}
 };
 
@@ -86,7 +88,7 @@ public:
 
 	Database db; // database of image descriptors
 	uint32_t curr_id = 0; // Increment unbounded. We will never get near a billion images, so it is ok to do so
-	int n_exclude = 10; // Number of most recent frames to exclude from search space
+	int n_exclude = 0; // Number of most recent frames to exclude from search space
 
 	caffe::Net<float>* autoencoder; // the deploy autoencoder
 	caffe::Blob<float>* autoencoder_input; // The encoder's input blob
@@ -99,9 +101,14 @@ public:
 	{
 		delete autoencoder;
 	}
+
+	void SetNumExclude(int n){
+		n_exclude = n;
+	}
 	
 	// input image, calculate and save image descriptor to database, then return its internal ID
 	uint32_t add(const cv::Mat& im);
+	uint32_t add(const descriptor &descr);
 
 	/***********************************
 	* Use these if max_res nearest neighbors are desired
@@ -111,6 +118,8 @@ public:
 
 	// This is used internally by the above overload, but it is made public for convenience. 
 	void query(const descriptor& descr, QueryResults& results, size_t max_res=1, bool add_after=1);
+
+	void query(const descriptor& descr, std::vector<query_result>& results, double threshold);
 	/*****************************************
 	* Use these if only one nearest neighbor is desired. They will be less expensive
 	******************************************/
